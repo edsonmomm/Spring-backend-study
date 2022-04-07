@@ -20,14 +20,22 @@ After running the application, go to:
 http://localhost:8080/h2-console
 
 Enter the information for the url, username, and password in the application.yml:
-* url: jdbc:h2:mem:localdb
-* username: sa
-* password: password
+```
+url: jdbc:h2:mem:localdb
+username: sa 
+password: password
+```
 
 
 You should be able to see a db console now that has the Sample Repository in it.
 
-If you type "SELECT * FROM SAMPLE" and click "Run", you should see two rows, for ids 1 and 2
+Type:
+
+```
+"SELECT * FROM SAMPLE"
+````
+
+Click "Run", you should see two rows, for ids 1 and 2
 
 ###Suggestions
 
