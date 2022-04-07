@@ -5,7 +5,8 @@ import com.ninjaone.backendinterviewproject.service.SampleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/sample")
+@RestController
+@RequestMapping("/sample")
 public class SampleController {
     private final SampleService sampleService;
 

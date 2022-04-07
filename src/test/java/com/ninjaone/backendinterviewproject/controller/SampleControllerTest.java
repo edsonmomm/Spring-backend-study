@@ -57,7 +57,7 @@ public class SampleControllerTest {
     void getSampleData() throws Exception {
         when(sampleService.getSampleEntity(ID)).thenReturn(Optional.of(sampleEntity));
 
-        mockMvc.perform(get("/sample/" + ID).contextPath("/sample"))
+        mockMvc.perform(get("/sample/" + ID))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(objectMapper.writeValueAsString(sampleEntity)));
@@ -69,7 +69,6 @@ public class SampleControllerTest {
 
         String sampleEntityString = objectMapper.writeValueAsString(sampleEntity);
         mockMvc.perform(post("/sample")
-                        .contextPath("/sample")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(sampleEntityString))
                 .andExpect(status().isCreated())
@@ -80,7 +79,7 @@ public class SampleControllerTest {
     void deleteSampleData() throws Exception {
         doNothing().when(sampleService).deleteSampleEntity(ID);
 
-        mockMvc.perform(delete("/sample/" + ID).contextPath("/sample"))
+        mockMvc.perform(delete("/sample/" + ID))
                 .andExpect(status().isNoContent());
     }
 }
