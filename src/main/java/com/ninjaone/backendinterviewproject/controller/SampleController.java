@@ -1,6 +1,6 @@
 package com.ninjaone.backendinterviewproject.controller;
 
-import com.ninjaone.backendinterviewproject.model.SampleEntity;
+import com.ninjaone.backendinterviewproject.model.Sample;
 import com.ninjaone.backendinterviewproject.service.SampleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +15,12 @@ public class SampleController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    private SampleEntity postSampleEntity(@RequestBody SampleEntity sample){
+    private Sample postSampleEntity(@RequestBody Sample sample){
         return sampleService.saveSampleEntity(sample);
     }
 
     @GetMapping("/{id}")
-    private SampleEntity getSampleEntity(@PathVariable String id){
+    private Sample getSampleEntity(@PathVariable String id){
         return sampleService.getSampleEntity(id)
                 .orElseThrow();
     }

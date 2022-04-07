@@ -1,7 +1,7 @@
 package com.ninjaone.backendinterviewproject.service;
 
 import com.ninjaone.backendinterviewproject.database.SampleRepository;
-import com.ninjaone.backendinterviewproject.model.SampleEntity;
+import com.ninjaone.backendinterviewproject.model.Sample;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,11 +14,11 @@ public class SampleService {
         this.sampleRepository = sampleRepository;
     }
 
-    public SampleEntity saveSampleEntity(SampleEntity sample){
+    public Sample saveSampleEntity(Sample sample){
         return sampleRepository.save(sample);
     }
 
-    public Optional<SampleEntity> getSampleEntity(String id){
+    public Optional<Sample> getSampleEntity(String id){
         return sampleRepository.findById(id);
     }
     public void deleteSampleEntity(String id) {

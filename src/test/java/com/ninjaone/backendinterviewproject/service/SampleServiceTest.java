@@ -1,7 +1,7 @@
 package com.ninjaone.backendinterviewproject.service;
 
 import com.ninjaone.backendinterviewproject.database.SampleRepository;
-import com.ninjaone.backendinterviewproject.model.SampleEntity;
+import com.ninjaone.backendinterviewproject.model.Sample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +25,11 @@ public class SampleServiceTest {
     @InjectMocks
     private SampleService testObject;
 
-    private SampleEntity sampleEntity;
+    private Sample sampleEntity;
 
     @BeforeEach
     void setup(){
-        sampleEntity = SampleEntity.builder()
+        sampleEntity = Sample.builder()
                 .id(ID)
                 .value("value")
                 .build();
@@ -38,8 +38,8 @@ public class SampleServiceTest {
     @Test
     void getSampleData() {
         when(sampleRepository.findById(ID)).thenReturn(Optional.of(sampleEntity));
-        Optional<SampleEntity> sampleEntityOptional = testObject.getSampleEntity(ID);
-        SampleEntity actualEntity = sampleEntityOptional.orElse(null);
+        Optional<Sample> sampleEntityOptional = testObject.getSampleEntity(ID);
+        Sample actualEntity = sampleEntityOptional.orElse(null);
         assert actualEntity != null;
         assertEquals(sampleEntity.getValue(), actualEntity.getValue());
     }

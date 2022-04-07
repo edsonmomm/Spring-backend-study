@@ -2,7 +2,7 @@ package com.ninjaone.backendinterviewproject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ninjaone.backendinterviewproject.BackendInterviewProjectApplication;
-import com.ninjaone.backendinterviewproject.model.SampleEntity;
+import com.ninjaone.backendinterviewproject.model.Sample;
 import com.ninjaone.backendinterviewproject.service.SampleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,11 +43,11 @@ public class SampleControllerTest {
     @MockBean
     private SampleService sampleService;
 
-    private SampleEntity sampleEntity;
+    private Sample sampleEntity;
 
     @BeforeEach
     void setup(){
-        sampleEntity = SampleEntity.builder()
+        sampleEntity = Sample.builder()
                 .id(ID)
                 .value("value")
                 .build();
