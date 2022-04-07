@@ -47,10 +47,7 @@ public class SampleControllerTest {
 
     @BeforeEach
     void setup(){
-        sampleEntity = Sample.builder()
-                .id(ID)
-                .value("value")
-                .build();
+        sampleEntity = new Sample(ID, "value");
     }
 
     @Test
