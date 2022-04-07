@@ -1,14 +1,20 @@
 package com.ninjaone.backendinterviewproject.model;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class SampleEntity {
     @Id
-    String id;
-    String value;
+    private String id;
+    private String value;
 }

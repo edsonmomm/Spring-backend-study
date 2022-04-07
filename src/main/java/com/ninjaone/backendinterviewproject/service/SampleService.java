@@ -21,4 +21,7 @@ public class SampleService {
     public Optional<SampleEntity> getSampleEntity(String id){
         return sampleRepository.findById(id);
     }
+    public void deleteSampleEntity(String id) {
+        sampleRepository.deleteById(id);
+    }
 }
