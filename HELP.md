@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.ninjaone.backend-interview-project' is invalid and this project uses 'com.ninjaone.backendinterviewproject' instead.
+* The original package name `com.ninjaone.backend-interview-project` is invalid and this project uses `com.ninjaone.backendinterviewproject` instead.
 
 # Getting Started
 
