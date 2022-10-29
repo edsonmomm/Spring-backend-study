@@ -7,7 +7,7 @@ import javax.persistence.*;
  * Allows the costumer to customize the device with specific items
  */
 @Entity
-public class DeviceItem {
+public class DeviceService {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

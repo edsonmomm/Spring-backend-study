@@ -38,7 +38,7 @@ public interface DeviceRepository  extends CrudRepository<Device, Integer> {
             "         ON DT.ID = D.DEVICE_TYPE_ID\n" +
             "INNER JOIN SERVICE SC\n" +
             "        ON SC.DEVICE_TYPE_ID = DT.ID\n" +
-            "INNER JOIN DEVICE_ITEM DI\n" +
+            "INNER JOIN DEVICE_SERVICE DI\n" +
             "        ON DI.DEVICE_ID = D.ID\n" +
             "       AND DI.CHOSEN_SERVICE_ID = SC.ID", nativeQuery = true)
     BigDecimal getDeviceTotalCost();
