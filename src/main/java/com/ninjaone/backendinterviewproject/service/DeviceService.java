@@ -1,17 +1,18 @@
 package com.ninjaone.backendinterviewproject.service;
 
 import com.ninjaone.backendinterviewproject.database.DeviceRepository;
+import com.ninjaone.backendinterviewproject.database.DeviceServiceCostRepository;
 import com.ninjaone.backendinterviewproject.database.DeviceTypeRepository;
+import com.ninjaone.backendinterviewproject.database.ServiceCostRepository;
 import com.ninjaone.backendinterviewproject.exception.BusinessException;
 import com.ninjaone.backendinterviewproject.exception.DeviceNotFoundException;
 import com.ninjaone.backendinterviewproject.exception.DeviceTypeNotFoundException;
+import com.ninjaone.backendinterviewproject.exception.ServiceCostNotFoundException;
 import com.ninjaone.backendinterviewproject.model.Device;
 import com.ninjaone.backendinterviewproject.model.DeviceServiceCost;
 import com.ninjaone.backendinterviewproject.model.DeviceType;
-import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
-import com.ninjaone.backendinterviewproject.model.dto.NewDeviceRequest;
-import com.ninjaone.backendinterviewproject.model.dto.ServiceCostDTO;
-import com.ninjaone.backendinterviewproject.model.dto.UpdateDeviceRequest;
+import com.ninjaone.backendinterviewproject.model.ServiceCost;
+import com.ninjaone.backendinterviewproject.model.dto.*;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -30,9 +32,18 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
     private final DeviceTypeRepository deviceTypeRepository;
 
-    public DeviceService(ModelMapper modelMapper, DeviceRepository deviceRepository, DeviceTypeRepository deviceTypeRepository) {
+    private final ServiceCostRepository serviceCostRepository;
+
+    private final DeviceServiceCostRepository deviceServiceCostRepository;
+
+    public DeviceService(ModelMapper modelMapper, DeviceRepository deviceRepository,
+                         DeviceTypeRepository deviceTypeRepository, ServiceCostRepository serviceCostRepository,
+                         DeviceServiceCostRepository deviceServiceCostRepository) {
+
         this.deviceRepository = deviceRepository;
         this.deviceTypeRepository = deviceTypeRepository;
+        this.serviceCostRepository = serviceCostRepository;
+        this.deviceServiceCostRepository = deviceServiceCostRepository;
         this.modelMapper = modelMapper;
         if (modelMapper.getConfiguration()!= null) {
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -54,11 +65,12 @@ public class DeviceService {
         deviceDTO.setServices(new ArrayList<>());
         if (device.getDeviceServiceCosts() != null && !device.getDeviceServiceCosts().isEmpty()) {
             for (DeviceServiceCost deviceServiceCost : device.getDeviceServiceCosts()) {
-                ServiceCostDTO serviceCostDTO = modelMapper.map(deviceServiceCost.getChosenServiceCost(), ServiceCostDTO.class);
-                deviceDTO.getServices().add(serviceCostDTO);
+                if (deviceServiceCost.getChosenServiceCost() != null) {
+                    ServiceCostDTO serviceCostDTO = modelMapper.map(deviceServiceCost.getChosenServiceCost(), ServiceCostDTO.class);
+                    deviceDTO.getServices().add(serviceCostDTO);
+                }
             }
         }
-
         return deviceDTO;
     }
 
@@ -70,6 +82,15 @@ public class DeviceService {
      */
     public BigDecimal getCompleteDeviceTotalCost() {
         return deviceRepository.getCompleteDeviceTotalCost();
+    }
+
+    /**
+     * Return the cost value by device
+     *
+     * @return
+     */
+    public List<ICostByDeviceDTO> getCostByDevice() {
+        return deviceRepository.getCostByDevice();
     }
 
     /**
@@ -95,8 +116,32 @@ public class DeviceService {
 
         Device device = modelMapper.map(newDeviceRequest, Device.class);
         device.setDeviceType(deviceType);
+
         device = deviceRepository.save(device);
-        return modelMapper.map(device, DeviceDTO.class);
+        // Get services chosen
+        if (newDeviceRequest.getDeviceServiceRequests() != null && !newDeviceRequest.getDeviceServiceRequests().isEmpty()) {
+            device.setDeviceServiceCosts(new ArrayList<>());
+            for (NewDeviceServiceRequest newDeviceServiceRequest : newDeviceRequest.getDeviceServiceRequests()) {
+                // verify if service exists
+                ServiceCost serviceCost = serviceCostRepository.findByIdAndDeviceTypeId(newDeviceServiceRequest.getServiceId(), deviceType.getId())
+                        .orElseThrow(() -> new ServiceCostNotFoundException(newDeviceServiceRequest.getServiceId()));
+
+                /** TODO find a better way to treat the connection table
+                 */
+                // Create the services
+                DeviceServiceCost deviceServiceCost = new DeviceServiceCost();
+                deviceServiceCost.setDevice(device);
+                deviceServiceCost.setChosenServiceCost(serviceCost);
+                deviceServiceCost = deviceServiceCostRepository.save(deviceServiceCost);
+                device.getDeviceServiceCosts().add(deviceServiceCost);
+            }
+            device = deviceRepository.save(device);
+        }
+        // Check if mandatory items were added to the list of chosen services
+
+
+        // return the dto complete with the items
+        return this.getDeviceById(device.getId());
     }
 
     public DeviceDTO updateDevice(@RequestBody UpdateDeviceRequest updateDeviceRequest) {
@@ -104,15 +149,41 @@ public class DeviceService {
         DeviceType deviceType = deviceTypeRepository.findById(updateDeviceRequest.getDeviceTypeId())
                 .orElseThrow(() -> new DeviceTypeNotFoundException(updateDeviceRequest.getDeviceTypeId()));
 
-        // Verify if exists another device with same name
-        Device deviceExists = deviceRepository.findById(updateDeviceRequest.getId())
-                .orElseThrow(() -> new DeviceNotFoundException(updateDeviceRequest.getId()));
-
         Device device = modelMapper.map(updateDeviceRequest, Device.class);
         device.setDeviceType(deviceType);
         device = deviceRepository.save(device);
 
-        return modelMapper.map(device, DeviceDTO.class);
+        // delete previous services
+        // ugly way to solve it :(
+        deleteAllDeviceServices(device.getId());
+        // Get services chosen
+        if (updateDeviceRequest.getDeviceServiceRequests() != null && !updateDeviceRequest.getDeviceServiceRequests().isEmpty()) {
+            device.setDeviceServiceCosts(new ArrayList<>());
+            for (NewDeviceServiceRequest newDeviceServiceRequest : updateDeviceRequest.getDeviceServiceRequests()) {
+                // verify if service exists
+                ServiceCost serviceCost = serviceCostRepository.findByIdAndDeviceTypeId(newDeviceServiceRequest.getServiceId(), deviceType.getId())
+                        .orElseThrow(() -> new ServiceCostNotFoundException(newDeviceServiceRequest.getServiceId()));
+
+                /** TODO find a better way to treat the connection table
+                 */
+                // Create the services
+                DeviceServiceCost deviceServiceCost = new DeviceServiceCost();
+                deviceServiceCost.setDevice(device);
+                deviceServiceCost.setChosenServiceCost(serviceCost);
+                deviceServiceCost = deviceServiceCostRepository.save(deviceServiceCost);
+                device.getDeviceServiceCosts().add(deviceServiceCost);
+            }
+            device = deviceRepository.save(device);
+        }
+        return this.getDeviceById(updateDeviceRequest.getId());
+    }
+
+    private void deleteAllDeviceServices(Integer deviceId) {
+        List<DeviceServiceCost> deviceServiceCostList = deviceServiceCostRepository.findByDeviceId(deviceId);
+
+        for (DeviceServiceCost deviceServiceCost : deviceServiceCostList) {
+            deviceServiceCostRepository.deleteById(deviceServiceCost.getId());
+        }
     }
 
     /**

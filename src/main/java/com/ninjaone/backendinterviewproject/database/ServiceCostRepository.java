@@ -9,5 +9,7 @@ public interface ServiceCostRepository extends CrudRepository<ServiceCost, Integ
 
     Optional<ServiceCost> findByDescriptionAndDeviceTypeId(String description, Integer deviceTypeId);
 
+    Optional<ServiceCost> findByIdAndDeviceTypeId(Integer id, Integer deviceTypeId);
+
     Optional<ServiceCost> findByIdNotAndDescriptionAndDeviceTypeId(Integer id, String description, Integer deviceTypeId);
 }

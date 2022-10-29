@@ -1,15 +1,13 @@
 package com.ninjaone.backendinterviewproject.controller;
 
-import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
-import com.ninjaone.backendinterviewproject.model.dto.NewDeviceRequest;
-import com.ninjaone.backendinterviewproject.model.dto.TotalCostDTO;
-import com.ninjaone.backendinterviewproject.model.dto.UpdateDeviceRequest;
+import com.ninjaone.backendinterviewproject.model.dto.*;
 import com.ninjaone.backendinterviewproject.service.DeviceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/device")
@@ -54,6 +52,12 @@ public class DeviceController {
         TotalCostDTO totalCostDTO = new TotalCostDTO(deviceService.getDeviceTotalCost());
 
         return new ResponseEntity<>(totalCostDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/costValueByDevice")
+    private ResponseEntity<List<ICostByDeviceDTO>> getCostValueByDevice() {
+        List<ICostByDeviceDTO> costByDeviceDTO = deviceService.getCostByDevice();
+        return new ResponseEntity<>(costByDeviceDTO, HttpStatus.OK);
     }
 
     @PostMapping("/create")
