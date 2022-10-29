@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+/**
+ * Types of device: Windows, Windows Server, Mac, etc
+ */
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor

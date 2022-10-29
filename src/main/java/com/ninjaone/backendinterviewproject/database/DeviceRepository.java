@@ -10,11 +10,36 @@ import java.math.BigDecimal;
 @Repository
 public interface DeviceRepository  extends CrudRepository<Device, Integer> {
 
-    @Query(value = "SELECT SUM(SC.VALUE) totalCost \n" +
-                   "  FROM DEVICE D\n" +
-                   " INNER JOIN DEVICE_TYPE DT\n" +
-                   "         ON DT.ID = D.DEVICE_TYPE_ID\n" +
-                   "INNER JOIN SERVICE SC\n" +
-                   "        ON SC.DEVICE_TYPE_ID = DT.ID", nativeQuery = true)
-    BigDecimal getTotalCost();
+    /**
+     * return the cost of all devices
+     * considering that all items available would be selected.
+     *
+     * @return BigDecimal
+     */
+    @Query(value =
+            "SELECT ISNULL(SUM(SC.VALUE),0) totalCost \n" +
+            "  FROM DEVICE D\n" +
+            " INNER JOIN DEVICE_TYPE DT\n" +
+            "         ON DT.ID = D.DEVICE_TYPE_ID\n" +
+            "INNER JOIN SERVICE SC\n" +
+            "        ON SC.DEVICE_TYPE_ID = DT.ID", nativeQuery = true)
+    BigDecimal getCompleteDeviceTotalCost();
+
+    /**
+     * return the cost for all devices
+     * considering only the services selected.
+     *
+     * @return BigDecimal
+     */
+    @Query(value =
+            "SELECT ISNULL(SUM(SC.VALUE),0) totalCost \n" +
+            "  FROM DEVICE D\n" +
+            " INNER JOIN DEVICE_TYPE DT\n" +
+            "         ON DT.ID = D.DEVICE_TYPE_ID\n" +
+            "INNER JOIN SERVICE SC\n" +
+            "        ON SC.DEVICE_TYPE_ID = DT.ID\n" +
+            "INNER JOIN DEVICE_ITEM DI\n" +
+            "        ON DI.DEVICE_ID = D.ID\n" +
+            "       AND DI.CHOSEN_SERVICE_ID = SC.ID", nativeQuery = true)
+    BigDecimal getDeviceTotalCost();
 }

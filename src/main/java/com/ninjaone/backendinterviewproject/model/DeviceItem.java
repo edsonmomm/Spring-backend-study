@@ -1,12 +1,21 @@
 package com.ninjaone.backendinterviewproject.model;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 /**
  * To hold the items choosen on device purchase
  * Allows the costumer to customize the device with specific items
  */
-//@Entity
+@Entity
 public class DeviceItem {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
+
+    @ManyToOne
+    Device device;
+
+    @ManyToOne
+    Service chosenService;
 }

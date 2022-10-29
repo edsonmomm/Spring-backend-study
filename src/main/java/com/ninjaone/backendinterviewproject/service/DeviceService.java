@@ -17,10 +17,25 @@ public class DeviceService {
         return deviceRepository.findById(id);
     }
 
-    public BigDecimal getTotalCost() {
-        return deviceRepository.getTotalCost();
+    /**
+     * return the cost of all devices
+     * considering that all items available would be selected.
+     *
+     * @return BigDecimal
+     */
+    public BigDecimal getCompleteDeviceTotalCost() {
+        return deviceRepository.getCompleteDeviceTotalCost();
     }
 
+    /**
+     * return the cost for all devices
+     * considering only the services selected.
+     *
+     * @return BigDecimal
+     */
+    public BigDecimal getDeviceTotalCost() {
+        return deviceRepository.getDeviceTotalCost();
+    }
     public void deleteDeviceEntity(Integer id) {
         deviceRepository.deleteById(id);
     }

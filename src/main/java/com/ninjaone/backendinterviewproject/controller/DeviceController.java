@@ -31,12 +31,27 @@ public class DeviceController {
 
     }
 
-    @GetMapping("/totalCost")
-    private ResponseEntity<TotalCostDTO> getTotalCost() {
+    /**
+     * return the cost of all devices
+     * considering that all items available would be selected.
+     */
+    @GetMapping("/completeDeviceTotalCost")
+    private ResponseEntity<TotalCostDTO> getCompleteDeviceTotalCost() {
         TotalCostDTO totalCostDTO = new TotalCostDTO();
 
-        BigDecimal totalCost = deviceService.getTotalCost();
+        BigDecimal totalCost = deviceService.getCompleteDeviceTotalCost();
         totalCostDTO.setTotalCost(totalCost);
+
+        return new ResponseEntity<>(totalCostDTO, HttpStatus.OK);
+    }
+
+    /**
+     * return the cost for all devices
+     * considering only the services selected.
+     */
+    @GetMapping("/totalCost")
+    private ResponseEntity<TotalCostDTO> getTotalCost() {
+        TotalCostDTO totalCostDTO = new TotalCostDTO(deviceService.getDeviceTotalCost());
 
         return new ResponseEntity<>(totalCostDTO, HttpStatus.OK);
     }
