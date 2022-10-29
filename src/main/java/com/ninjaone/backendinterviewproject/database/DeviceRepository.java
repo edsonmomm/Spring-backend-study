@@ -6,9 +6,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 @Repository
 public interface DeviceRepository extends CrudRepository<Device, Integer> {
+
+    Optional<Device> findBySystemName(String systemName);
 
     /**
      * return the cost of all devices
@@ -38,7 +41,7 @@ public interface DeviceRepository extends CrudRepository<Device, Integer> {
             "         ON DT.ID = D.DEVICE_TYPE_ID\n" +
             "INNER JOIN SERVICE_COST SC\n" +
             "        ON SC.DEVICE_TYPE_ID = DT.ID\n" +
-            "INNER JOIN DEVICE_SERVICE DI\n" +
+            "INNER JOIN DEVICE_SERVICE_COST DI\n" +
             "        ON DI.DEVICE_ID = D.ID\n" +
             "       AND DI.CHOSEN_SERVICE_COST_ID = SC.ID", nativeQuery = true)
     BigDecimal getDeviceTotalCost();

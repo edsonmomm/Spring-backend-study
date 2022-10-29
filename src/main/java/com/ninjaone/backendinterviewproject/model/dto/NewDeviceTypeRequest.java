@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class NewDeviceTypeRequest {
-    String deviceName;
+    private String deviceName;
 }

@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UpdateDeviceTypeRequest {
-    Integer id;
-    String deviceName;
+    private Integer id;
+    private String deviceName;
 }

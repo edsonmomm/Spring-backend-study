@@ -1,10 +1,12 @@
 package com.ninjaone.backendinterviewproject.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -14,12 +16,14 @@ public class Device {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
-    String systemName;
+    private String systemName;
 
     @ManyToOne
-    DeviceType deviceType;
+    private DeviceType deviceType;
 
-
+    @OneToMany(mappedBy = "device", fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<DeviceServiceCost> deviceServiceCosts;
 }

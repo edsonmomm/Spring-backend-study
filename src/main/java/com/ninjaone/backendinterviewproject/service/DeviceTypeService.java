@@ -48,7 +48,7 @@ public class DeviceTypeService {
         Optional<DeviceType> deviceTypeExists = deviceTypeRepository.findByDeviceName(newDeviceTypeRequest.getDeviceName());
 
         if (deviceTypeExists.isPresent())
-            throw new BusinessException("Device " + newDeviceTypeRequest.getDeviceName() + " already exists");
+            throw new BusinessException("Device Type " + newDeviceTypeRequest.getDeviceName() + " already exists");
 
         DeviceType deviceType = deviceTypeRepository.save(modelMapper.map(newDeviceTypeRequest, DeviceType.class));
 

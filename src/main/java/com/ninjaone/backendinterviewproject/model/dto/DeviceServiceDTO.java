@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class DeviceTypeDTO {
+public class DeviceServiceDTO {
     private Integer id;
-    private String deviceName;
+    private DeviceTypeDTO deviceType;
+    private ServiceCostDTO serviceCost;
 }

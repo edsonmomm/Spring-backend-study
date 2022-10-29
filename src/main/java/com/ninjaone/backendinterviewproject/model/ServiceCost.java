@@ -19,18 +19,18 @@ public class ServiceCost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
-    String description;
+    private String description;
 
-    BigDecimal value;
+    private BigDecimal value;
 
     /**
      * Means that the item must exists on the device package
      */
-    Boolean mandatory;
+    private Boolean mandatory;
 
     @ManyToOne
-    DeviceType deviceType;
+    private DeviceType deviceType;
 
 }

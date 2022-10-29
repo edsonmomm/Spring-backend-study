@@ -10,8 +10,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Data
 public class NewServiceCostRequest {
-    String description;
-    BigDecimal value;
-    Boolean mandatory;
-    Integer deviceTypeId;
+    private String description;
+    private BigDecimal value;
+    private Boolean mandatory;
+    private Integer deviceTypeId;
 }

@@ -1,7 +1,9 @@
 package com.ninjaone.backendinterviewproject.controller;
 
 import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
+import com.ninjaone.backendinterviewproject.model.dto.NewDeviceRequest;
 import com.ninjaone.backendinterviewproject.model.dto.TotalCostDTO;
+import com.ninjaone.backendinterviewproject.model.dto.UpdateDeviceRequest;
 import com.ninjaone.backendinterviewproject.service.DeviceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +54,23 @@ public class DeviceController {
         TotalCostDTO totalCostDTO = new TotalCostDTO(deviceService.getDeviceTotalCost());
 
         return new ResponseEntity<>(totalCostDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/create")
+    private ResponseEntity<DeviceDTO> createDevice(@RequestBody NewDeviceRequest newDeviceRequest) {
+        DeviceDTO deviceDTO = deviceService.createDevice(newDeviceRequest);
+        return new ResponseEntity<>(deviceDTO, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/update")
+    private ResponseEntity<DeviceDTO> updateDevice(@RequestBody UpdateDeviceRequest updateDeviceRequest) {
+        DeviceDTO deviceDTO = deviceService.updateDevice(updateDeviceRequest);
+        return new ResponseEntity<>(deviceDTO, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    private void deleteDevice(@PathVariable Integer id) {
+        deviceService.deleteDevice(id);
     }
 }

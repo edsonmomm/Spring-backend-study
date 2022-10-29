@@ -11,9 +11,9 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Data
 public class ServiceCostDTO {
-    Integer id;
-    String description;
-    BigDecimal value;
-    Boolean mandatory;
-    DeviceType deviceType;
+    private Integer id;
+    private String description;
+    private BigDecimal value;
+    private Boolean mandatory;
+    private DeviceType deviceType;
 }

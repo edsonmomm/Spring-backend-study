@@ -15,5 +15,5 @@ import java.math.BigDecimal;
  * Contains the information cost for devices
  */
 public class TotalCostDTO {
-    BigDecimal totalCost;
+    private BigDecimal totalCost;
 }
