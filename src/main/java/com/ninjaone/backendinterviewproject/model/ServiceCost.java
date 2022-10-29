@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Service {
+public class ServiceCost {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

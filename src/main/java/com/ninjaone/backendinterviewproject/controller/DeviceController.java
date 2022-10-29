@@ -27,7 +27,6 @@ public class DeviceController {
     private ResponseEntity<DeviceDTO> getDeviceById(@PathVariable Integer id) {
         DeviceDTO deviceDTO = deviceService.getDeviceById(id);
         return new ResponseEntity<>(deviceDTO, HttpStatus.OK);
-
     }
 
     /**

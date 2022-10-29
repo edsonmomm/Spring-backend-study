@@ -1,5 +1,6 @@
 package com.ninjaone.backendinterviewproject.controller;
 
+import com.ninjaone.backendinterviewproject.exception.BusinessException;
 import com.ninjaone.backendinterviewproject.model.Sample;
 import com.ninjaone.backendinterviewproject.service.SampleService;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class SampleController {
     @GetMapping("/{id}")
     private Sample getSampleEntity(@PathVariable String id){
         return sampleService.getSampleEntity(id)
-                .orElseThrow();
+                .orElseThrow(() -> new BusinessException(String.format("Sample %s not found",id)));
     }
 
     @DeleteMapping("/{id}")

@@ -17,5 +17,5 @@ public class DeviceService {
     Device device;
 
     @ManyToOne
-    Service chosenService;
+    ServiceCost chosenServiceCost;
 }

@@ -26,8 +26,15 @@ public class DeviceService {
         }
     }
 
+    /**
+     * Return device by id.
+     * Return exception if not found
+     *
+     * @param id
+     * @return
+     */
     public DeviceDTO getDeviceById(Integer id) {
-        Device device = deviceRepository.findById(id).orElseThrow(() -> new DeviceNotFoundException(String.format("Device id %s was not found.",id) ));
+        Device device = deviceRepository.findById(id).orElseThrow(() -> new DeviceNotFoundException(id) );
 
         return modelMapper.map(device, DeviceDTO.class);
     }
@@ -51,7 +58,17 @@ public class DeviceService {
     public BigDecimal getDeviceTotalCost() {
         return deviceRepository.getDeviceTotalCost();
     }
+
+    /**
+     * Delete the device by its id.
+     * If not found, raise exception
+     *
+     * @param id
+     */
     public void deleteDeviceEntity(Integer id) {
+        // Find device to delete
+        Device device = deviceRepository.findById(id).orElseThrow(() -> new DeviceNotFoundException(id) );
+
         deviceRepository.deleteById(id);
     }
 }

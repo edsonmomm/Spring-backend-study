@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 
 @Repository
-public interface DeviceRepository  extends CrudRepository<Device, Integer> {
+public interface DeviceRepository extends CrudRepository<Device, Integer> {
 
     /**
      * return the cost of all devices
@@ -21,7 +21,7 @@ public interface DeviceRepository  extends CrudRepository<Device, Integer> {
             "  FROM DEVICE D\n" +
             " INNER JOIN DEVICE_TYPE DT\n" +
             "         ON DT.ID = D.DEVICE_TYPE_ID\n" +
-            "INNER JOIN SERVICE SC\n" +
+            "INNER JOIN SERVICE_COST SC\n" +
             "        ON SC.DEVICE_TYPE_ID = DT.ID", nativeQuery = true)
     BigDecimal getCompleteDeviceTotalCost();
 
@@ -36,10 +36,10 @@ public interface DeviceRepository  extends CrudRepository<Device, Integer> {
             "  FROM DEVICE D\n" +
             " INNER JOIN DEVICE_TYPE DT\n" +
             "         ON DT.ID = D.DEVICE_TYPE_ID\n" +
-            "INNER JOIN SERVICE SC\n" +
+            "INNER JOIN SERVICE_COST SC\n" +
             "        ON SC.DEVICE_TYPE_ID = DT.ID\n" +
             "INNER JOIN DEVICE_SERVICE DI\n" +
             "        ON DI.DEVICE_ID = D.ID\n" +
-            "       AND DI.CHOSEN_SERVICE_ID = SC.ID", nativeQuery = true)
+            "       AND DI.CHOSEN_SERVICE_COST_ID = SC.ID", nativeQuery = true)
     BigDecimal getDeviceTotalCost();
 }
