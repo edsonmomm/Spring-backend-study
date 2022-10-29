@@ -1,9 +1,15 @@
 package com.ninjaone.backendinterviewproject.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class DeviceType {
 
     @Id
