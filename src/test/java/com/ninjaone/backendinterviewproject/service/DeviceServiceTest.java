@@ -57,7 +57,6 @@ public class DeviceServiceTest {
     // Test getDeviceById
     @Test
     void getDeviceDataById() {
-        assert true;
         when(deviceRepository.findById(deviceId)).thenReturn(Optional.of(deviceEntity));
         when(modelMapper.map(deviceEntity, DeviceDTO.class)).thenReturn(deviceDTO);
 
