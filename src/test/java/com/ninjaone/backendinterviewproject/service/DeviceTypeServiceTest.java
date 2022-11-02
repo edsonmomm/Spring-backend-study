@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 public class DeviceTypeServiceTest {
-    public static final Integer deviceTypeId = Integer.valueOf(321);
+    public static final Integer deviceTypeId = 321;
     public static final String deviceName = "Test Device Type";
 
     @Mock
@@ -50,8 +50,7 @@ public class DeviceTypeServiceTest {
         when(deviceTypeRepository.findById(deviceTypeId)).thenReturn(Optional.of(deviceTypeEntity));
         when(modelMapper.map(deviceTypeEntity, DeviceTypeDTO.class)).thenReturn(deviceTypeDTO);
 
-        DeviceTypeDTO deviceTypeEntityOptional = deviceTypeService.getDeviceTypeById(deviceTypeId);
-        DeviceTypeDTO actualEntity = deviceTypeEntityOptional;
+        DeviceTypeDTO actualEntity = deviceTypeService.getDeviceTypeById(deviceTypeId);
 
         assert actualEntity != null;
         assertEquals(deviceTypeEntity.getId(), actualEntity.getId());
