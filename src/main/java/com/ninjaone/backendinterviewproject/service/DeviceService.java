@@ -1,10 +1,7 @@
 package com.ninjaone.backendinterviewproject.service;
 
 import com.ninjaone.backendinterviewproject.database.*;
-import com.ninjaone.backendinterviewproject.exception.BusinessException;
-import com.ninjaone.backendinterviewproject.exception.DeviceNotFoundException;
-import com.ninjaone.backendinterviewproject.exception.DeviceTypeNotFoundException;
-import com.ninjaone.backendinterviewproject.exception.ServiceCostNotFoundException;
+import com.ninjaone.backendinterviewproject.exception.*;
 import com.ninjaone.backendinterviewproject.model.*;
 import com.ninjaone.backendinterviewproject.model.dto.*;
 import org.modelmapper.convention.MatchingStrategies;
@@ -95,6 +92,10 @@ public class DeviceService {
         DeviceType deviceType = deviceTypeRepository.findById(newDeviceRequest.getDeviceTypeId())
                 .orElseThrow(() -> new DeviceTypeNotFoundException(newDeviceRequest.getDeviceTypeId()));
 
+        // Verify if customer exists
+        Customer customer = customerRepository.findById(newDeviceRequest.getCustomerId())
+                .orElseThrow(() -> new CustomerNotFoundException(newDeviceRequest.getCustomerId()));
+
         // Verify if exists another device with same name
         Optional<Device> deviceExists = deviceRepository.findBySystemName(newDeviceRequest.getSystemName());
         if (deviceExists.isPresent())
@@ -102,6 +103,7 @@ public class DeviceService {
 
         Device device = modelMapper.map(newDeviceRequest, Device.class);
         device.setDeviceType(deviceType);
+        device.setCustomer(customer);
 
         device = deviceRepository.save(device);
         // Get services chosen

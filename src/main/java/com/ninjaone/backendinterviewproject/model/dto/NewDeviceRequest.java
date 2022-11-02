@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class NewDeviceRequest {
+    private Integer customerId;
     private String systemName;
     private Integer deviceTypeId;
     private List<NewDeviceServiceRequest> deviceServiceRequests;
