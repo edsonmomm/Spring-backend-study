@@ -54,8 +54,8 @@ public class DeviceService {
      * Return device by id.
      * Return exception if not found
      *
-     * @param id
-     * @return
+     * @param id  Device Id
+     * @return DeviceDTO
      */
     public DeviceDTO getDeviceById(Integer id) {
         Device device = deviceRepository.findById(id).orElseThrow(() -> new DeviceNotFoundException(id) );
@@ -87,7 +87,7 @@ public class DeviceService {
     /**
      * Return the cost value by device
      *
-     * @return
+     * @return List ICostByDeviceDTO 
      */
     public List<ICostByDeviceDTO> getCostByDevice() {
         return deviceRepository.getCostByDevice();
@@ -126,8 +126,7 @@ public class DeviceService {
                 ServiceCost serviceCost = serviceCostRepository.findByIdAndDeviceTypeId(newDeviceServiceRequest.getServiceId(), deviceType.getId())
                         .orElseThrow(() -> new ServiceCostNotFoundException(newDeviceServiceRequest.getServiceId()));
 
-                /** TODO find a better way to treat the connection table
-                 */
+                /* TODO find a better way to treat the connection table */
                 // Create the services
                 DeviceServiceCost deviceServiceCost = new DeviceServiceCost();
                 deviceServiceCost.setDevice(device);
@@ -164,8 +163,7 @@ public class DeviceService {
                 ServiceCost serviceCost = serviceCostRepository.findByIdAndDeviceTypeId(newDeviceServiceRequest.getServiceId(), deviceType.getId())
                         .orElseThrow(() -> new ServiceCostNotFoundException(newDeviceServiceRequest.getServiceId()));
 
-                /** TODO find a better way to treat the connection table
-                 */
+                /* TODO find a better way to treat the connection table */
                 // Create the services
                 DeviceServiceCost deviceServiceCost = new DeviceServiceCost();
                 deviceServiceCost.setDevice(device);
@@ -173,7 +171,7 @@ public class DeviceService {
                 deviceServiceCost = deviceServiceCostRepository.save(deviceServiceCost);
                 device.getDeviceServiceCosts().add(deviceServiceCost);
             }
-            device = deviceRepository.save(device);
+            deviceRepository.save(device);
         }
         return this.getDeviceById(updateDeviceRequest.getId());
     }
@@ -190,14 +188,14 @@ public class DeviceService {
      * Delete the device by its id.
      * If not found, raise exception
      *
-     * @param id
+     * @param id Device Id
      */
     public void deleteDevice(Integer id) {
-        Device device = deviceRepository.findById(id).orElseThrow(() -> new DeviceNotFoundException(id) );
+        final Device device = deviceRepository.findById(id).orElseThrow(() -> new DeviceNotFoundException(id));
         try {
-            deviceRepository.deleteById(id);
+            deviceRepository.deleteById(device.getId());
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException(String.format("Device with ID %s is been used. Cannot be deleted.", id));
+            throw new BusinessException(String.format("Device with ID %s is been used. Cannot be deleted.", device.getId()));
         }
     }
 }

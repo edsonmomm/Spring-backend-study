@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.modelmapper.ModelMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
+@Transactional
 public class CustomerServiceTest {
     public static final Integer customerId = 111;
     public static final String customerName = "Customer Name For Test";
@@ -46,7 +48,7 @@ public class CustomerServiceTest {
 
     @BeforeEach
     void setup(){
-        customerEntity = new Customer(customerId, customerName, customerNationalId);
+        customerEntity = new Customer(customerId, customerName, customerNationalId, null);
         customerDTO = new CustomerDTO(customerId, customerName, customerNationalId);
     }
 
@@ -109,6 +111,16 @@ public class CustomerServiceTest {
         doNothing().when(customerRepository).deleteById(customerId);
         customerService.deleteCustomerById(customerId);
         Mockito.verify(customerRepository, times(1)).deleteById(customerId);
+    }
+
+    @Test
+    void deleteCustomer_customerNotFound() throws CustomerNotFoundException {
+        doNothing().when(customerRepository).deleteById(customerId);
+        try {
+            customerService.deleteCustomerById(customerId);
+        } catch (CustomerNotFoundException e) {
+            assert true;
+        }
     }
 
     @Test

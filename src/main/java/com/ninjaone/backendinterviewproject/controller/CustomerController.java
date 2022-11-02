@@ -1,6 +1,7 @@
 package com.ninjaone.backendinterviewproject.controller;
 
 import com.ninjaone.backendinterviewproject.model.dto.CustomerDTO;
+import com.ninjaone.backendinterviewproject.model.dto.CustomerDevicesDTO;
 import com.ninjaone.backendinterviewproject.model.dto.NewCustomerDTO;
 import com.ninjaone.backendinterviewproject.model.dto.UpdateCustomerDTO;
 import com.ninjaone.backendinterviewproject.service.CustomerService;
@@ -39,11 +40,21 @@ public class CustomerController {
     }
 
     /**
+     * Return customer with its devices
+     */
+    @GetMapping("getCustomerAndDevices/{id}")
+    public ResponseEntity<CustomerDTO> getCustomerAndDevices(@PathVariable Integer id) {
+        CustomerDevicesDTO customerDevicesDTO = customerService.getCustomerAndDevices(id);
+
+        return new ResponseEntity<>(customerDevicesDTO, HttpStatus.OK);
+    }
+
+    /**
      * Create new customer from new request
      * If already exists a customer with the Narional Identification Number, throws exception
      *
-     * @param newCustomerDTO
-     * @return
+     * @param newCustomerDTO New customer request
+     * @return ResponseEntity with CustomerDTO
      */
     @PostMapping("/create")
     public ResponseEntity<CustomerDTO> createCustomer(@RequestBody NewCustomerDTO newCustomerDTO) {
@@ -57,8 +68,8 @@ public class CustomerController {
      * If tries to update the National Id Number and already exists another customer with new id,
      * update will be not allowed and an exception will be thrown
      *
-     * @param updateCustomerDTO
-     * @return
+     * @param updateCustomerDTO Update customer request
+     * @return ResponseEntity with CustomerDTO
      */
     @PutMapping("/update")
     public ResponseEntity<CustomerDTO> updateCustomer(@RequestBody UpdateCustomerDTO updateCustomerDTO) {

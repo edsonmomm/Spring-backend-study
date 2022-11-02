@@ -1,5 +1,6 @@
 package com.ninjaone.backendinterviewproject.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,10 @@ public class Device {
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     private DeviceType deviceType;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Customer customer;
 
     @OneToMany(mappedBy = "device", fetch = FetchType.EAGER)
     @JsonManagedReference

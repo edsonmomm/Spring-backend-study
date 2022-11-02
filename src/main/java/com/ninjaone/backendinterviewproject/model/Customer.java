@@ -1,13 +1,14 @@
 package com.ninjaone.backendinterviewproject.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -24,4 +25,9 @@ public class Customer {
      * As each country has different rules for this number, some accept letters, the atribute was defined as string.
      */
     private String nationalIdentificationNumber;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private List<Device> devices;
 }

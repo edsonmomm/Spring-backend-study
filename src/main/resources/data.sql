@@ -2,6 +2,14 @@ INSERT INTO SAMPLE VALUES('1', 'VALUE1');
 INSERT INTO SAMPLE VALUES('2', 'VALUE2');
 
 ------------------------------
+-- Create a customer
+INSERT INTO CUSTOMER VALUES (null,'CUSTOMER NAME', '0000021');
+SET @CUSTOMER_ID = IDENTITY();
+-- End of customer
+------------------------------
+
+
+------------------------------
 -- Create few types of device
 INSERT INTO DEVICE_TYPE VALUES(null,'WINDOWS');
 SET @WINDOWS = identity();
@@ -14,7 +22,6 @@ SET @MAC = identity();
 
 -- End of devices
 ------------------------------
-
 
 ------------------------------
 -- Create services by device
@@ -57,7 +64,7 @@ SET @service_screen_mac = identity();
 
 ------------------------------
 -- For testing, create some windows devices
-INSERT INTO DEVICE VALUES (null,'FIRST WIN SYSTEM',@WINDOWS);
+INSERT INTO DEVICE VALUES (null,'FIRST WIN SYSTEM',@CUSTOMER_ID,@WINDOWS);
 SET @device = identity();
 -- Insert the services chosen for the device (service psa is not included)
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_device_windows, @device);
@@ -65,7 +72,7 @@ INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_antivirus_windows, @device
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_backup_windows, @device);
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_screen_windows, @device);
 
---INSERT INTO DEVICE VALUES (null,'SECOND WIN SYSTEM',@WINDOWS);
+--INSERT INTO DEVICE VALUES (null,'SECOND WIN SYSTEM',@WINDOWS, @CUSTOMER_ID);
 --SET @device = identity();
 -- Insert the services chosen for the device (service psa is not included)
 --INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_device_windows, @device);
@@ -74,7 +81,7 @@ INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_screen_windows, @device);
 --INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_screen_windows, @device);
 
 -- For testing, create some windows server devices
-INSERT INTO DEVICE VALUES (null,'FIRST WINSERVER SYSTEM',@WINDOWS_SERVER);
+INSERT INTO DEVICE VALUES (null,'FIRST WINSERVER SYSTEM',@CUSTOMER_ID,@WINDOWS_SERVER);
 SET @device = identity();
 -- Insert the services chosen for the device (service psa is not included)
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_device_windowss, @device);
@@ -83,7 +90,7 @@ INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_backup_windowss, @device);
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_screen_windowss, @device);
 
 -- For testing, create some mac devices
-INSERT INTO DEVICE VALUES (null,'FIRST MAC SYSTEM',@MAC);
+INSERT INTO DEVICE VALUES (null,'FIRST MAC SYSTEM',@CUSTOMER_ID,@MAC);
 SET @device = identity();
 -- Insert the services chosen for the device (service psa is not included)
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_device_mac, @device);
@@ -91,7 +98,7 @@ INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_antivirus_mac, @device);
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_backup_mac, @device);
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_screen_mac, @device);
 
-INSERT INTO DEVICE VALUES (null,'SECOND MAC SYSTEM',@MAC);
+INSERT INTO DEVICE VALUES (null,'SECOND MAC SYSTEM',@CUSTOMER_ID,@MAC);
 SET @device = identity();
 -- Insert the services chosen for the device (service psa is not included)
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_device_mac, @device);
@@ -99,7 +106,7 @@ INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_antivirus_mac, @device);
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_backup_mac, @device);
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_screen_mac, @device);
 
-INSERT INTO DEVICE VALUES (null,'THIRD MAC SYSTEM',@MAC);
+INSERT INTO DEVICE VALUES (null,'THIRD MAC SYSTEM',@CUSTOMER_ID,@MAC);
 SET @device = identity();
 -- Insert the services chosen for the device (service psa is not included)
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_device_mac, @device);
@@ -108,4 +115,21 @@ INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_backup_mac, @device);
 INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_screen_mac, @device);
 
 -- End of devices
+------------------------------
+
+------------------------------
+-- Create a second customer
+INSERT INTO CUSTOMER VALUES (null,'SECOND CUSTOMER NAME', '000013300');
+SET @CUSTOMER_ID = IDENTITY();
+
+-- Create a device for second customer
+INSERT INTO DEVICE VALUES (null,'THIRD MAC SYSTEM',@CUSTOMER_ID,@MAC);
+SET @device = identity();
+-- Insert the services chosen for the device (service psa is not included)
+INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_device_mac, @device);
+INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_antivirus_mac, @device);
+INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_backup_mac, @device);
+INSERT INTO DEVICE_SERVICE_COST VALUES (NULL,@service_screen_mac, @device);
+
+-- End of customer
 ------------------------------
