@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -29,34 +28,9 @@ public class DeviceController {
         return new ResponseEntity<>(deviceDTO, HttpStatus.OK);
     }
 
-    /**
-     * return the cost of all devices
-     * considering that all items available would be selected.
-     */
-    @GetMapping("/completeDeviceTotalCost")
-    private ResponseEntity<TotalCostDTO> getCompleteDeviceTotalCost() {
-        TotalCostDTO totalCostDTO = new TotalCostDTO();
-
-        BigDecimal totalCost = deviceService.getCompleteDeviceTotalCost();
-        totalCostDTO.setTotalCost(totalCost);
-
-        return new ResponseEntity<>(totalCostDTO, HttpStatus.OK);
-    }
-
-    /**
-     * return the cost for all devices
-     * considering only the services selected.
-     */
-    @GetMapping("/totalCost")
-    private ResponseEntity<TotalCostDTO> getTotalCost() {
-        TotalCostDTO totalCostDTO = new TotalCostDTO(deviceService.getDeviceTotalCost());
-
-        return new ResponseEntity<>(totalCostDTO, HttpStatus.OK);
-    }
-
     @GetMapping("/costValueByDevice")
-    private ResponseEntity<List<ICostByDeviceDTO>> getCostValueByDevice() {
-        List<ICostByDeviceDTO> costByDeviceDTO = deviceService.getCostByDevice();
+    private ResponseEntity<List<CostByDeviceDTO>> getCostValueByDevice() {
+        List<CostByDeviceDTO> costByDeviceDTO = deviceService.getCostByDevice();
         return new ResponseEntity<>(costByDeviceDTO, HttpStatus.OK);
     }
 

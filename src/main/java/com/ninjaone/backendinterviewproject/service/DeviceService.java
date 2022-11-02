@@ -1,17 +1,11 @@
 package com.ninjaone.backendinterviewproject.service;
 
-import com.ninjaone.backendinterviewproject.database.DeviceRepository;
-import com.ninjaone.backendinterviewproject.database.DeviceServiceCostRepository;
-import com.ninjaone.backendinterviewproject.database.DeviceTypeRepository;
-import com.ninjaone.backendinterviewproject.database.ServiceCostRepository;
+import com.ninjaone.backendinterviewproject.database.*;
 import com.ninjaone.backendinterviewproject.exception.BusinessException;
 import com.ninjaone.backendinterviewproject.exception.DeviceNotFoundException;
 import com.ninjaone.backendinterviewproject.exception.DeviceTypeNotFoundException;
 import com.ninjaone.backendinterviewproject.exception.ServiceCostNotFoundException;
-import com.ninjaone.backendinterviewproject.model.Device;
-import com.ninjaone.backendinterviewproject.model.DeviceServiceCost;
-import com.ninjaone.backendinterviewproject.model.DeviceType;
-import com.ninjaone.backendinterviewproject.model.ServiceCost;
+import com.ninjaone.backendinterviewproject.model.*;
 import com.ninjaone.backendinterviewproject.model.dto.*;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,15 +28,18 @@ public class DeviceService {
     private final ServiceCostRepository serviceCostRepository;
 
     private final DeviceServiceCostRepository deviceServiceCostRepository;
+    private final CustomerRepository customerRepository;
 
     public DeviceService(ModelMapper modelMapper, DeviceRepository deviceRepository,
                          DeviceTypeRepository deviceTypeRepository, ServiceCostRepository serviceCostRepository,
-                         DeviceServiceCostRepository deviceServiceCostRepository) {
+                         DeviceServiceCostRepository deviceServiceCostRepository,
+                         CustomerRepository customerRepository) {
 
         this.deviceRepository = deviceRepository;
         this.deviceTypeRepository = deviceTypeRepository;
         this.serviceCostRepository = serviceCostRepository;
         this.deviceServiceCostRepository = deviceServiceCostRepository;
+        this.customerRepository = customerRepository;
         this.modelMapper = modelMapper;
         if (modelMapper.getConfiguration()!= null) {
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
@@ -75,32 +71,22 @@ public class DeviceService {
     }
 
     /**
-     * return the cost of all devices
-     * considering that all items available would be selected.
-     *
-     * @return BigDecimal
-     */
-    public BigDecimal getCompleteDeviceTotalCost() {
-        return deviceRepository.getCompleteDeviceTotalCost();
-    }
-
-    /**
      * Return the cost value by device
      *
      * @return List ICostByDeviceDTO 
      */
-    public List<ICostByDeviceDTO> getCostByDevice() {
-        return deviceRepository.getCostByDevice();
-    }
+    public List<CostByDeviceDTO> getCostByDevice() {
+        List<CostByDeviceDTO> costByDeviceDTOList = new ArrayList<>();
+        List<ICostByDeviceDTO> iCostByDeviceDTOList = deviceRepository.getCostByDevice();
 
-    /**
-     * return the cost for all devices
-     * considering only the services selected.
-     *
-     * @return BigDecimal
-     */
-    public BigDecimal getDeviceTotalCost() {
-        return deviceRepository.getDeviceTotalCost();
+        for (ICostByDeviceDTO iCostByDeviceDTO : iCostByDeviceDTOList) {
+            CostByDeviceDTO costByDeviceDTO = modelMapper.map(iCostByDeviceDTO, CostByDeviceDTO.class);
+            Customer customer = customerRepository.findById(iCostByDeviceDTO.getCustomerId()).get();
+            costByDeviceDTO.setCustomer(modelMapper.map(customer, CustomerDTO.class));
+
+            costByDeviceDTOList.add(costByDeviceDTO);
+        }
+        return costByDeviceDTOList;
     }
 
     // Create
