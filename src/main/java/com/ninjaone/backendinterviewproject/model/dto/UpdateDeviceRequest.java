@@ -11,6 +11,7 @@ import java.util.List;
 @Data
 public class UpdateDeviceRequest {
     private Integer id;
+    private Integer customerId;
     private String systemName;
     private Integer deviceTypeId;
     private List<NewDeviceServiceRequest> deviceServiceRequests;

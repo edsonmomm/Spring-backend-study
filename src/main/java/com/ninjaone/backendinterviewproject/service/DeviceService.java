@@ -136,12 +136,16 @@ public class DeviceService {
         DeviceType deviceType = deviceTypeRepository.findById(updateDeviceRequest.getDeviceTypeId())
                 .orElseThrow(() -> new DeviceTypeNotFoundException(updateDeviceRequest.getDeviceTypeId()));
 
+        // Verify if customer exists
+        Customer customer = customerRepository.findById(updateDeviceRequest.getCustomerId())
+                .orElseThrow(() -> new CustomerNotFoundException(updateDeviceRequest.getCustomerId()));
+
         Device device = modelMapper.map(updateDeviceRequest, Device.class);
         device.setDeviceType(deviceType);
+        device.setCustomer(customer);
         device = deviceRepository.save(device);
 
         // delete previous services
-        // ugly way to solve it :(
         deleteAllDeviceServices(device.getId());
         // Get services chosen
         if (updateDeviceRequest.getDeviceServiceRequests() != null && !updateDeviceRequest.getDeviceServiceRequests().isEmpty()) {
