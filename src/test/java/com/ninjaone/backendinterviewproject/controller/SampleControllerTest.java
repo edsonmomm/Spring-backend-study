@@ -3,6 +3,7 @@ package com.ninjaone.backendinterviewproject.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ninjaone.backendinterviewproject.BackendInterviewProjectApplication;
 import com.ninjaone.backendinterviewproject.model.Sample;
+import com.ninjaone.backendinterviewproject.security.BasicAuthWebSecurityConfiguration;
 import com.ninjaone.backendinterviewproject.service.SampleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -31,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SampleController.class)
 @AutoConfigureMockMvc
 @AutoConfigureDataJpa
+@Import(BasicAuthWebSecurityConfiguration.class)
 public class SampleControllerTest {
     public static final String ID = "12345";
 
@@ -44,17 +48,19 @@ public class SampleControllerTest {
     private SampleService sampleService;
 
     private Sample sampleEntity;
+    HttpHeaders httpHeaders= new HttpHeaders();
 
     @BeforeEach
     void setup(){
         sampleEntity = new Sample(ID, "value");
+        httpHeaders.add("Authorization","Basic " + ControllerUtils.getEncodedPassword());
     }
 
     @Test
     void getSampleData() throws Exception {
         when(sampleService.getSampleEntity(ID)).thenReturn(Optional.of(sampleEntity));
 
-        mockMvc.perform(get("/sample/" + ID))
+        mockMvc.perform(get("/sample/" + ID).headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(objectMapper.writeValueAsString(sampleEntity)));
@@ -66,6 +72,7 @@ public class SampleControllerTest {
 
         String sampleEntityString = objectMapper.writeValueAsString(sampleEntity);
         mockMvc.perform(post("/sample")
+                        .headers(httpHeaders)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(sampleEntityString))
                 .andExpect(status().isCreated())
@@ -76,7 +83,7 @@ public class SampleControllerTest {
     void deleteSampleData() throws Exception {
         doNothing().when(sampleService).deleteSampleEntity(ID);
 
-        mockMvc.perform(delete("/sample/" + ID))
+        mockMvc.perform(delete("/sample/" + ID).headers(httpHeaders))
                 .andExpect(status().isNoContent());
     }
 }

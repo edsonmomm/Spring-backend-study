@@ -5,6 +5,7 @@ import com.ninjaone.backendinterviewproject.BackendInterviewProjectApplication;
 import com.ninjaone.backendinterviewproject.model.dto.CustomerDTO;
 import com.ninjaone.backendinterviewproject.model.dto.NewCustomerDTO;
 import com.ninjaone.backendinterviewproject.model.dto.UpdateCustomerDTO;
+import com.ninjaone.backendinterviewproject.security.BasicAuthWebSecurityConfiguration;
 import com.ninjaone.backendinterviewproject.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -32,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureDataJpa
 @Transactional
+@Import(BasicAuthWebSecurityConfiguration.class)
 public class CustomerControllerTest {
     public static final Integer customerId = 111;
 
@@ -50,19 +54,22 @@ public class CustomerControllerTest {
     private CustomerDTO customerDTO;
     private NewCustomerDTO newCustomerDTO;
     private UpdateCustomerDTO updateCustomerDTO;
+    HttpHeaders httpHeaders= new HttpHeaders();
 
     @BeforeEach
     void setup(){
         customerDTO = new CustomerDTO(customerId, customerName, customerNationalId);
         newCustomerDTO = new NewCustomerDTO(customerName, customerNationalId);
         updateCustomerDTO = new UpdateCustomerDTO(customerId, customerName, customerNationalId);
+
+        httpHeaders.add("Authorization","Basic " + ControllerUtils.getEncodedPassword());
     }
 
     @Test
     void getCustomerById() throws Exception {
         when(customerService.getCustomerById(customerId)).thenReturn(customerDTO);
 
-        mockMvc.perform(get("/customer/" + customerId))
+        mockMvc.perform(get("/customer/" + customerId).headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(objectMapper.writeValueAsString(customerDTO)));
@@ -72,7 +79,7 @@ public class CustomerControllerTest {
     void getCustomerByNationalId() throws Exception {
         when(customerService.getCustomerByNationalId(customerNationalId)).thenReturn(customerDTO);
 
-        mockMvc.perform(get("/customer/getByNationalId/" + customerNationalId))
+        mockMvc.perform(get("/customer/getByNationalId/" + customerNationalId).headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(objectMapper.writeValueAsString(customerDTO)));
@@ -85,6 +92,7 @@ public class CustomerControllerTest {
         String newCustomerDTOString = objectMapper.writeValueAsString(newCustomerDTO);
         String customerDTOString = objectMapper.writeValueAsString(customerDTO);
         mockMvc.perform(post("/customer/create")
+                        .headers(httpHeaders)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newCustomerDTOString))
                 .andExpect(status().isCreated())
@@ -98,6 +106,7 @@ public class CustomerControllerTest {
         String updateCustomerDTOString = objectMapper.writeValueAsString(updateCustomerDTO);
         String customerDTOString = objectMapper.writeValueAsString(customerDTO);
         mockMvc.perform(put("/customer/update")
+                        .headers(httpHeaders)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateCustomerDTOString))
                 .andExpect(status().isOk())
@@ -108,7 +117,8 @@ public class CustomerControllerTest {
     void deleteCustomer() throws Exception {
         doNothing().when(customerService).deleteCustomerById(customerId);
 
-        mockMvc.perform(delete("/customer/delete/" + customerId))
+        mockMvc.perform(delete("/customer/delete/" + customerId)
+                        .headers(httpHeaders))
                 .andExpect(status().isNoContent());
     }
 }

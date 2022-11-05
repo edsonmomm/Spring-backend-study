@@ -7,6 +7,7 @@ import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
 import com.ninjaone.backendinterviewproject.model.dto.DeviceTypeDTO;
 import com.ninjaone.backendinterviewproject.model.dto.NewDeviceRequest;
 import com.ninjaone.backendinterviewproject.model.dto.UpdateDeviceRequest;
+import com.ninjaone.backendinterviewproject.security.BasicAuthWebSecurityConfiguration;
 import com.ninjaone.backendinterviewproject.service.DeviceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,12 +17,17 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import static org.mockito.Mockito.doNothing;
@@ -35,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(DeviceController.class)
 @AutoConfigureMockMvc
 @AutoConfigureDataJpa
-@Transactional
+@Import(BasicAuthWebSecurityConfiguration.class)
 public class DeviceControllerTest {
     public static final Integer deviceId = 991;
     public static final String systemName = "Test device system";
@@ -54,6 +60,7 @@ public class DeviceControllerTest {
 
     private DeviceDTO deviceDTO;
     private DeviceTypeDTO deviceTypeDTO;
+    HttpHeaders httpHeaders= new HttpHeaders();
 
     @BeforeEach
     void setup(){
@@ -64,13 +71,15 @@ public class DeviceControllerTest {
         deviceDTO.setSystemName(systemName);
         deviceDTO.setDeviceType(deviceTypeDTO);
 
+        httpHeaders.add("Authorization","Basic " + ControllerUtils.getEncodedPassword());
     }
 
     @Test
     void getDeviceDataById() throws Exception {
         when(deviceService.getDeviceById(deviceId)).thenReturn(deviceDTO);
 
-        mockMvc.perform(get("/device/" + deviceId))
+        mockMvc.perform(get("/device/" + deviceId)
+                        .headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(objectMapper.writeValueAsString(deviceDTO)));
@@ -89,6 +98,7 @@ public class DeviceControllerTest {
         String newDeviceRequestString = objectMapper.writeValueAsString(newDeviceRequest);
         String deviceDTOString = objectMapper.writeValueAsString(deviceDTO);
         mockMvc.perform(post("/device/create")
+                        .headers(httpHeaders)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newDeviceRequestString))
                 .andExpect(status().isCreated())
@@ -109,6 +119,7 @@ public class DeviceControllerTest {
         String updateDeviceRequestString = objectMapper.writeValueAsString(updateDeviceRequest);
         String deviceDTOString = objectMapper.writeValueAsString(deviceDTO);
         mockMvc.perform(put("/device/update")
+                        .headers(httpHeaders)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateDeviceRequestString))
                 .andExpect(status().isCreated())
@@ -119,7 +130,8 @@ public class DeviceControllerTest {
     void deleteDevice() throws Exception {
         doNothing().when(deviceService).deleteDevice(deviceId);
 
-        mockMvc.perform(delete("/device/delete/" + deviceId))
+        mockMvc.perform(delete("/device/delete/" + deviceId)
+                        .headers(httpHeaders))
                 .andExpect(status().isNoContent());
     }
 }

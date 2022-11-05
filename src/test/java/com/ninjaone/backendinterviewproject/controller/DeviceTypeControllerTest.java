@@ -5,6 +5,7 @@ import com.ninjaone.backendinterviewproject.BackendInterviewProjectApplication;
 import com.ninjaone.backendinterviewproject.model.dto.DeviceTypeDTO;
 import com.ninjaone.backendinterviewproject.model.dto.NewDeviceTypeRequest;
 import com.ninjaone.backendinterviewproject.model.dto.UpdateDeviceTypeRequest;
+import com.ninjaone.backendinterviewproject.security.BasicAuthWebSecurityConfiguration;
 import com.ninjaone.backendinterviewproject.service.DeviceTypeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,11 +15,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -31,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(DeviceTypeController.class)
 @AutoConfigureMockMvc
 @AutoConfigureDataJpa
-@Transactional
+@Import(BasicAuthWebSecurityConfiguration.class)
 public class DeviceTypeControllerTest {
     public static final Integer deviceTypeId = 321;
     public static final String deviceName = "Test Device Type";
@@ -46,17 +48,19 @@ public class DeviceTypeControllerTest {
     private DeviceTypeService deviceTypeService;
 
     private DeviceTypeDTO deviceTypeDTO;
+    HttpHeaders httpHeaders= new HttpHeaders();
 
     @BeforeEach
     void setup(){
         deviceTypeDTO = new DeviceTypeDTO(deviceTypeId, deviceName);
+        httpHeaders.add("Authorization","Basic " + ControllerUtils.getEncodedPassword());
     }
 
     @Test
     void getDeviceTypeById() throws Exception {
         when(deviceTypeService.getDeviceTypeById(deviceTypeId)).thenReturn(deviceTypeDTO);
 
-        mockMvc.perform(get("/deviceType/" + deviceTypeId))
+        mockMvc.perform(get("/deviceType/" + deviceTypeId).headers(httpHeaders))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(objectMapper.writeValueAsString(deviceTypeDTO)));
@@ -72,6 +76,7 @@ public class DeviceTypeControllerTest {
         String newDeviceTypeRequestString = objectMapper.writeValueAsString(newDeviceTypeRequest);
         String deviceTypeDTOString = objectMapper.writeValueAsString(deviceTypeDTO);
         mockMvc.perform(post("/deviceType/create")
+                        .headers(httpHeaders)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(newDeviceTypeRequestString))
                 .andExpect(status().isCreated())
@@ -89,6 +94,7 @@ public class DeviceTypeControllerTest {
         String updateDeviceTypeRequestString = objectMapper.writeValueAsString(updateDeviceTypeRequest);
         String deviceTypeDTOString = objectMapper.writeValueAsString(deviceTypeDTO);
         mockMvc.perform(put("/deviceType/update")
+                        .headers(httpHeaders)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateDeviceTypeRequestString))
                 .andExpect(status().isOk())
@@ -99,7 +105,7 @@ public class DeviceTypeControllerTest {
     void deleteCustomer() throws Exception {
         doNothing().when(deviceTypeService).deleteDeviceType(deviceTypeId);
 
-        mockMvc.perform(delete("/deviceType/delete/" + deviceTypeId))
+        mockMvc.perform(delete("/deviceType/delete/" + deviceTypeId).headers(httpHeaders))
                 .andExpect(status().isNoContent());
     }
 }
