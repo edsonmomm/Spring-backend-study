@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ninjaone.backendinterviewproject.BackendInterviewProjectApplication;
 import com.ninjaone.backendinterviewproject.model.Device;
 import com.ninjaone.backendinterviewproject.model.dto.DeviceDTO;
+import com.ninjaone.backendinterviewproject.model.dto.DeviceTypeDTO;
+import com.ninjaone.backendinterviewproject.model.dto.NewDeviceRequest;
+import com.ninjaone.backendinterviewproject.model.dto.UpdateDeviceRequest;
 import com.ninjaone.backendinterviewproject.service.DeviceService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,8 +22,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,6 +39,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DeviceControllerTest {
     public static final Integer deviceId = 991;
     public static final String systemName = "Test device system";
+    public static final Integer deviceTypeId = 1;
+    public static final String deviceTypeName = "Test for Device Type";
+    public static final Integer customerId = 1111;
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,13 +53,17 @@ public class DeviceControllerTest {
     private DeviceService deviceService;
 
     private DeviceDTO deviceDTO;
-    private Device deviceEntity;
+    private DeviceTypeDTO deviceTypeDTO;
 
     @BeforeEach
     void setup(){
+        deviceTypeDTO = new DeviceTypeDTO(deviceTypeId, deviceTypeName);
+
         deviceDTO = new DeviceDTO();
         deviceDTO.setId(deviceId);
         deviceDTO.setSystemName(systemName);
+        deviceDTO.setDeviceType(deviceTypeDTO);
+
     }
 
     @Test
@@ -61,6 +74,52 @@ public class DeviceControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(objectMapper.writeValueAsString(deviceDTO)));
+    }
 
+    @Test
+    void createDevice() throws Exception {
+        NewDeviceRequest newDeviceRequest = new NewDeviceRequest();
+        newDeviceRequest.setCustomerId(customerId);
+        newDeviceRequest.setSystemName(systemName);
+        newDeviceRequest.setDeviceTypeId(deviceTypeId);
+        newDeviceRequest.setDeviceServiceRequests(new ArrayList<>());
+
+        when(deviceService.createDevice(newDeviceRequest)).thenReturn(deviceDTO);
+
+        String newDeviceRequestString = objectMapper.writeValueAsString(newDeviceRequest);
+        String deviceDTOString = objectMapper.writeValueAsString(deviceDTO);
+        mockMvc.perform(post("/device/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(newDeviceRequestString))
+                .andExpect(status().isCreated())
+                .andExpect(content().string(deviceDTOString));
+    }
+
+    @Test
+    void updateDevice() throws Exception {
+        UpdateDeviceRequest updateDeviceRequest = new UpdateDeviceRequest();
+        updateDeviceRequest.setId(deviceId);
+        updateDeviceRequest.setCustomerId(customerId);
+        updateDeviceRequest.setSystemName(systemName);
+        updateDeviceRequest.setDeviceTypeId(deviceTypeId);
+        updateDeviceRequest.setDeviceServiceRequests(new ArrayList<>());
+
+        when(deviceService.updateDevice(updateDeviceRequest)).thenReturn(deviceDTO);
+
+        String updateDeviceRequestString = objectMapper.writeValueAsString(updateDeviceRequest);
+        String deviceDTOString = objectMapper.writeValueAsString(deviceDTO);
+        mockMvc.perform(put("/device/update")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateDeviceRequestString))
+                .andExpect(status().isCreated())
+                .andExpect(content().string(deviceDTOString));
+    }
+
+    @Test
+    void deleteDevice() throws Exception {
+        doNothing().when(deviceService).deleteDevice(deviceId);
+
+        mockMvc.perform(delete("/device/delete/" + deviceId))
+                .andExpect(status().isNoContent());
     }
 }
