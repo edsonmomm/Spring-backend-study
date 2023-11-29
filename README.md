@@ -1,10 +1,10 @@
-# NinjaOne Backend Interview Project
+# Spring Backend Project for Study
 
 The project is configured to use an in-memory H2 database that is volatile. If you wish to make it maintain data on application shut down, you can change the spring.database.jdbc-url to point at a file like `jdbc:h2:file:/{your file path here}`
 
 ## Starting the Application
 
-Run the `BackendInterviewProjectApplication` class
+Run the `BackendProjectApplication` class
 
 Go to:
 * http://localhost:8080/sample/1
